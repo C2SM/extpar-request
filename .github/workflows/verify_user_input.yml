@@ -21,9 +21,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Validate user input
+      - name: Create issue file
         run: |
-          python3 src/validate_user_input.py --comment "${{ github.event.issue.body }}"
+          echo "${{ github.event.issue.number }}" > issue.txt
+      - name: Validate user input
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 src/validate_user_input.py --auth_token $GITHUB_TOKEN --issue_id_file issue.txt
 
       - name: Add 'verified' label to issue
         uses: actions/github-script@v3
